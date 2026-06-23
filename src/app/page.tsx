@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import {
   Box,
   Button,
@@ -14,60 +14,81 @@ import {
 
 export default function Home() {
   // =========================
-  // 設定系ステート
+  // 設定
   // =========================
-
-  // プレイヤー人数（2〜4人）
   const [playerCount, setPlayerCount] = useState(4);
-
-  // 初期持ち時間（分単位）
   const [initialMinutes, setInitialMinutes] = useState(10);
 
   // =========================
-  // タイマー管理
+  // 状態
   // =========================
-
-  // 各プレイヤーの残り時間（秒）
-  const [times, setTimes] = useState<number[]>(
-    Array(4).fill(10 * 60)
-  );
-
-  // 現在アクティブなプレイヤーインデックス
+  const [times, setTimes] = useState<number[]>(Array(4).fill(600));
   const [currentPlayer, setCurrentPlayer] = useState(0);
 
+  // 最新のcurrentPlayerを保持（setIntervalズレ防止）
+  const currentPlayerRef = useRef(currentPlayer);
+
+  useEffect(() => {
+    currentPlayerRef.current = currentPlayer;
+  }, [currentPlayer]);
+
   // =========================
-  // タイマー処理（1秒ごとに減少）
+  // 全員0判定
+  // =========================
+  const isAllZero = (arr: number[]) => arr.every((t) => t === 0);
+
+  // =========================
+  // タイマー
   // =========================
   useEffect(() => {
     const interval = setInterval(() => {
       setTimes((prev) => {
-        const next = [...prev];
+        if (isAllZero(prev)) return prev;
 
-        // 現在のプレイヤーだけ減らす
-        if (next[currentPlayer] > 0) {
-          next[currentPlayer]--;
+        const next = [...prev];
+        const idx = currentPlayerRef.current;
+
+        if (next[idx] > 0) {
+          next[idx] -= 1;
         }
 
         return next;
       });
     }, 1000);
 
-    // クリーンアップ（メモリリーク防止）
     return () => clearInterval(interval);
-  }, [currentPlayer]);
+  }, []);
 
   // =========================
-  // 時間フォーマット（mm:ss）
+  // 0になったら次へ（安定版）
+  // =========================
+  useEffect(() => {
+    if (isAllZero(times)) return;
+
+    const currentTime = times[currentPlayer];
+
+    if (currentTime !== 0) return;
+
+    setCurrentPlayer((prev) => {
+      let next = prev + 1;
+
+      if (next >= playerCount) next = 0;
+
+      return next;
+    });
+  }, [times, currentPlayer, playerCount]);
+
+  // =========================
+  // 表示フォーマット
   // =========================
   const formatTime = (seconds: number) => {
     const m = Math.floor(seconds / 60);
     const s = seconds % 60;
-
     return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
   };
 
   // =========================
-  // プレイヤー切り替え
+  // 手動切り替え
   // =========================
   const handleNext = () => {
     setCurrentPlayer((prev) =>
@@ -76,7 +97,7 @@ export default function Home() {
   };
 
   // =========================
-  // リセット処理
+  // リセット
   // =========================
   const handleReset = () => {
     setTimes(Array(playerCount).fill(initialMinutes * 60));
@@ -84,7 +105,7 @@ export default function Home() {
   };
 
   // =========================
-  // プレイヤー人数変更
+  // プレイヤー数変更
   // =========================
   const handlePlayerCountChange = (count: number) => {
     setPlayerCount(count);
@@ -93,7 +114,7 @@ export default function Home() {
   };
 
   // =========================
-  // 持ち時間変更
+  // 時間変更
   // =========================
   const handleTimeChange = (minutes: number) => {
     setInitialMinutes(minutes);
@@ -102,46 +123,25 @@ export default function Home() {
   };
 
   return (
-    <Box
-      sx={{
-        minHeight: "100vh",
-        bgcolor: "#F5F7FA",
-        px: 3,
-        py: 5,
-      }}
-    >
-      {/* =========================
-          タイトル
-      ========================= */}
+    <Box sx={{ minHeight: "100vh", bgcolor: "#F5F7FA", px: 3, py: 5 }}>
+      {/* タイトル */}
       <Typography
-        variant="h3"
+        variant="h4"
         sx={{
           textAlign: "center",
           color: "#102A43",
           fontWeight: 700,
           letterSpacing: "0.25em",
-          mb: 4,
+          mb:1.5,
         }}
       >
         TIMER
       </Typography>
 
-      {/* =========================
-          設定エリア
-      ========================= */}
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "row",
-          gap: 2,
-          justifyContent: "center",
-          mb: 1,
-        }}
-      >
-        {/* プレイヤー人数 */}
+      {/* 設定 */}
+      <Box sx={{ display: "flex", gap: 2, justifyContent: "center", mb: 2 }}>
         <FormControl size="small" sx={{ minWidth: 150 }}>
           <InputLabel>PLAYERS</InputLabel>
-
           <Select
             value={playerCount}
             label="PLAYERS"
@@ -155,10 +155,8 @@ export default function Home() {
           </Select>
         </FormControl>
 
-        {/* 持ち時間 */}
         <FormControl size="small" sx={{ minWidth: 150 }}>
           <InputLabel>TIME</InputLabel>
-
           <Select
             value={initialMinutes}
             label="TIME"
@@ -175,104 +173,45 @@ export default function Home() {
         </FormControl>
       </Box>
 
-      {/* =========================
-          リセットボタン
-      ========================= */}
+      {/* RESET */}
       <Box sx={{ textAlign: "center" }}>
         <Button
-          variant="text"
           onClick={handleReset}
-          sx={{
-            color: "#7B8794",
-            fontSize: 26,
-            fontWeight: 700,
-            letterSpacing: "0.2em",
-          }}
+          sx={{ fontSize: 24, fontWeight: 700 }}
         >
           RESET
         </Button>
       </Box>
 
-      {/* =========================
-          プレイヤーカード一覧
-      ========================= */}
-      <Box
-        sx={{
-          maxWidth: 400,
-          height:400,
-          mx: "auto",
-          display: "flex",
-          flexDirection: "column",
-          gap: 2,
-        }}
-      >
+      {/* プレイヤー */}
+      <Box sx={{ maxWidth: 400, mx: "auto", mt: 2, display: "flex", flexDirection: "column", gap: 2 }}>
         {times.slice(0, playerCount).map((time, index) => {
-          const active = currentPlayer === index;
+          const active =
+            currentPlayer === index && time > 0; // ←チラつき防止の核心
 
           return (
             <Card
               key={index}
-              onClick={() => {
-                // 現在のプレイヤーのみクリックで次へ
-                if (active) {
-                  handleNext();
-                }
-              }}
+              onClick={() => active && handleNext()}
               sx={{
                 p: 1,
                 borderRadius: 6,
-                bgcolor: active ? "#102A43" : "#FFFFFF",
-                color: active ? "#FFFFFF" : "#102A43",
+                bgcolor: active ? "#102A43" : "#fff",
+                color: active ? "#fff" : "#102A43",
                 cursor: active ? "pointer" : "default",
-                boxShadow: "0 10px 30px rgba(16,42,67,0.08)",
-                transition: ".25s",
-
-                "&:hover": active
-                  ? {
-                      transform: "translateY(-2px)",
-                      boxShadow:
-                        "0 20px 50px rgba(16,42,67,0.15)",
-                    }
-                  : {},
+                transition: ".2s",
               }}
             >
-              {/* プレイヤー名 */}
-              <Typography
-                sx={{
-                  textAlign: "center",
-                  fontSize: 15,
-                  fontWeight: 500,
-                  letterSpacing: "0.2em",
-                  opacity: 0.8,
-                }}
-              >
+              <Typography sx={{ textAlign: "center" }}>
                 PLAYER {index + 1}
               </Typography>
 
-              {/* 残り時間 */}
-              <Typography
-                sx={{
-                  m:-1,
-                  textAlign: "center",
-                  fontWeight:600,
-                  letterSpacing: "0.05em",
-                  fontSize: 40
-                }}
-              >
+              <Typography sx={{ textAlign: "center", fontSize: 40 }}>
                 {formatTime(time)}
               </Typography>
 
-              {/* アクティブ時の表示 */}
               {active && (
-                <Typography
-                  sx={{
-                    mt: 1,
-                    textAlign: "center",
-                    fontSize: 13,
-                    letterSpacing: "0.2em",
-                    opacity: 0.7,
-                  }}
-                >
+                <Typography sx={{ textAlign: "center", fontSize: 12 }}>
                   TAP TO PASS
                 </Typography>
               )}
