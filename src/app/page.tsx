@@ -13,26 +13,37 @@ import {
 } from "@mui/material";
 
 export default function Home() {
-  // プレイヤー人数
+  // =========================
+  // 設定系ステート
+  // =========================
+
+  // プレイヤー人数（2〜4人）
   const [playerCount, setPlayerCount] = useState(4);
 
-  // 初期持ち時間（分）
+  // 初期持ち時間（分単位）
   const [initialMinutes, setInitialMinutes] = useState(10);
+
+  // =========================
+  // タイマー管理
+  // =========================
 
   // 各プレイヤーの残り時間（秒）
   const [times, setTimes] = useState<number[]>(
     Array(4).fill(10 * 60)
   );
 
-  // 現在のプレイヤー
+  // 現在アクティブなプレイヤーインデックス
   const [currentPlayer, setCurrentPlayer] = useState(0);
 
-  // タイマー
+  // =========================
+  // タイマー処理（1秒ごとに減少）
+  // =========================
   useEffect(() => {
     const interval = setInterval(() => {
       setTimes((prev) => {
         const next = [...prev];
 
+        // 現在のプレイヤーだけ減らす
         if (next[currentPlayer] > 0) {
           next[currentPlayer]--;
         }
@@ -41,10 +52,13 @@ export default function Home() {
       });
     }, 1000);
 
+    // クリーンアップ（メモリリーク防止）
     return () => clearInterval(interval);
   }, [currentPlayer]);
 
-  // 時間表示
+  // =========================
+  // 時間フォーマット（mm:ss）
+  // =========================
   const formatTime = (seconds: number) => {
     const m = Math.floor(seconds / 60);
     const s = seconds % 60;
@@ -52,27 +66,35 @@ export default function Home() {
     return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
   };
 
-  // 次のプレイヤー
+  // =========================
+  // プレイヤー切り替え
+  // =========================
   const handleNext = () => {
     setCurrentPlayer((prev) =>
       prev === playerCount - 1 ? 0 : prev + 1
     );
   };
 
-  // リセット
+  // =========================
+  // リセット処理
+  // =========================
   const handleReset = () => {
     setTimes(Array(playerCount).fill(initialMinutes * 60));
     setCurrentPlayer(0);
   };
 
-  // 人数変更
+  // =========================
+  // プレイヤー人数変更
+  // =========================
   const handlePlayerCountChange = (count: number) => {
     setPlayerCount(count);
     setTimes(Array(count).fill(initialMinutes * 60));
     setCurrentPlayer(0);
   };
 
+  // =========================
   // 持ち時間変更
+  // =========================
   const handleTimeChange = (minutes: number) => {
     setInitialMinutes(minutes);
     setTimes(Array(playerCount).fill(minutes * 60));
@@ -88,7 +110,9 @@ export default function Home() {
         py: 5,
       }}
     >
-      {/* タイトル */}
+      {/* =========================
+          タイトル
+      ========================= */}
       <Typography
         variant="h3"
         sx={{
@@ -102,16 +126,19 @@ export default function Home() {
         TIMER
       </Typography>
 
-      {/* 設定 */}
+      {/* =========================
+          設定エリア
+      ========================= */}
       <Box
         sx={{
           display: "flex",
           flexDirection: "row",
           gap: 2,
           justifyContent: "center",
-          mb: 4,
+          mb: 1,
         }}
       >
+        {/* プレイヤー人数 */}
         <FormControl size="small" sx={{ minWidth: 150 }}>
           <InputLabel>PLAYERS</InputLabel>
 
@@ -128,6 +155,7 @@ export default function Home() {
           </Select>
         </FormControl>
 
+        {/* 持ち時間 */}
         <FormControl size="small" sx={{ minWidth: 150 }}>
           <InputLabel>TIME</InputLabel>
 
@@ -146,14 +174,17 @@ export default function Home() {
           </Select>
         </FormControl>
       </Box>
-        
+
+      {/* =========================
+          リセットボタン
+      ========================= */}
       <Box sx={{ textAlign: "center" }}>
         <Button
           variant="text"
           onClick={handleReset}
           sx={{
             color: "#7B8794",
-            fontSize:26,
+            fontSize: 26,
             fontWeight: 700,
             letterSpacing: "0.2em",
           }}
@@ -161,16 +192,17 @@ export default function Home() {
           RESET
         </Button>
       </Box>
-      
 
-      {/* プレイヤー */}
+      {/* =========================
+          プレイヤーカード一覧
+      ========================= */}
       <Box
         sx={{
-          maxWidth: 900,
+          maxWidth: 600,
           mx: "auto",
           display: "flex",
           flexDirection: "column",
-          gap: 3,
+          gap: 2,
         }}
       >
         {times.slice(0, playerCount).map((time, index) => {
@@ -180,6 +212,7 @@ export default function Home() {
             <Card
               key={index}
               onClick={() => {
+                // 現在のプレイヤーのみクリックで次へ
                 if (active) {
                   handleNext();
                 }
@@ -202,10 +235,11 @@ export default function Home() {
                   : {},
               }}
             >
+              {/* プレイヤー名 */}
               <Typography
                 sx={{
                   textAlign: "center",
-                  fontSize: 20,
+                  fontSize: 15,
                   fontWeight: 600,
                   letterSpacing: "0.2em",
                   opacity: 0.8,
@@ -214,6 +248,7 @@ export default function Home() {
                 PLAYER {index + 1}
               </Typography>
 
+              {/* 残り時間 */}
               <Typography
                 sx={{
                   mt: 2,
@@ -221,14 +256,15 @@ export default function Home() {
                   fontWeight: 700,
                   letterSpacing: "-0.05em",
                   fontSize: {
-                    xs: 56,
-                    md: 90,
+                    xs: 40,
+                    md: 70,
                   },
                 }}
               >
                 {formatTime(time)}
               </Typography>
 
+              {/* アクティブ時の表示 */}
               {active && (
                 <Typography
                   sx={{
@@ -245,7 +281,6 @@ export default function Home() {
             </Card>
           );
         })}
-
       </Box>
     </Box>
   );
