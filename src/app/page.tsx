@@ -199,6 +199,7 @@ export default function Home() {
       <Box
         sx={{
           maxWidth: 600,
+          maxHeight:500,
           mx: "auto",
           display: "flex",
           flexDirection: "column",
@@ -218,7 +219,7 @@ export default function Home() {
                 }
               }}
               sx={{
-                p: 4,
+                p: 1,
                 borderRadius: 6,
                 bgcolor: active ? "#102A43" : "#FFFFFF",
                 color: active ? "#FFFFFF" : "#102A43",
@@ -251,7 +252,7 @@ export default function Home() {
               {/* 残り時間 */}
               <Typography
                 sx={{
-                  mt: 2,
+                  mt: 0,
                   textAlign: "center",
                   fontWeight: 700,
                   letterSpacing: "-0.05em",
