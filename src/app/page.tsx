@@ -9,7 +9,6 @@ import {
   InputLabel,
   MenuItem,
   Select,
-  Stack,
   Typography,
 } from "@mui/material";
 
@@ -104,11 +103,14 @@ export default function Home() {
       </Typography>
 
       {/* 設定 */}
-      <Stack
-        direction="row"
-        spacing={2}
-        justifyContent="center"
-        sx={{ mb: 4 }}
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "row",
+          gap: 2,
+          justifyContent: "center",
+          mb: 4,
+        }}
       >
         <FormControl size="small" sx={{ minWidth: 150 }}>
           <InputLabel>PLAYERS</InputLabel>
@@ -143,7 +145,7 @@ export default function Home() {
             ))}
           </Select>
         </FormControl>
-      </Stack>
+      </Box>
         
       <Box sx={{ textAlign: "center" }}>
         <Button
@@ -162,11 +164,13 @@ export default function Home() {
       
 
       {/* プレイヤー */}
-      <Stack
-        spacing={3}
+      <Box
         sx={{
           maxWidth: 900,
           mx: "auto",
+          display: "flex",
+          flexDirection: "column",
+          gap: 3,
         }}
       >
         {times.slice(0, playerCount).map((time, index) => {
@@ -242,7 +246,7 @@ export default function Home() {
           );
         })}
 
-      </Stack>
+      </Box>
     </Box>
   );
 }
