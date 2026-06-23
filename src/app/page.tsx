@@ -123,13 +123,50 @@ export default function Home() {
   };
 
   return (
-    <Box sx={{ minHeight: "100vh", bgcolor: "#F5F7FA", px: 3, py: 5 }}>
+  <Box
+    sx={{
+      minHeight: "100vh",
+      px: 3,
+      py: 5,
+
+      backgroundImage: "url('/background.png')",
+      backgroundSize: "cover",
+      backgroundPosition: "center",
+      backgroundRepeat: "no-repeat",
+
+
+      position: "relative",
+      overflow: "hidden",
+
+      // 暗めオーバーレイ
+      "&::before": {
+        content: '""',
+        position: "absolute",
+        inset: 0,
+        background: "rgba(10, 15, 25, 0.55)",
+        zIndex: 0,
+      },
+
+      // ぼかしレイヤー（おしゃれ感の核心）
+      "&::after": {
+        content: '""',
+        position: "absolute",
+        inset: 0,
+        backdropFilter: "blur(6px)",
+        zIndex: 0,
+      },
+    }}
+  >
+    {/* =====================
+        中身（必須：前面に出す）
+    ===================== */}
+    <Box sx={{ position: "relative", zIndex: 1 }}>
       {/* タイトル */}
       <Typography
         variant="h4"
         sx={{
           textAlign: "center",
-          color: "#102A43",
+          color: "#ffffff",
           fontWeight: 700,
           letterSpacing: "0.25em",
           mb:1.5,
@@ -140,7 +177,42 @@ export default function Home() {
 
       {/* 設定 */}
       <Box sx={{ display: "flex", gap: 2, justifyContent: "center", mb: 2 }}>
-        <FormControl size="small" sx={{ minWidth: 150 }}>
+        <FormControl
+          size="small"
+          sx={{
+            minWidth: 150,
+
+            // 👇ラベル色
+            "& .MuiInputLabel-root": {
+              color: "#fff",
+            },
+
+            // 👇選択中の文字色
+            "& .MuiSelect-select": {
+              color: "#fff",
+            },
+
+            // 👇枠線色
+            "& .MuiOutlinedInput-notchedOutline": {
+              borderColor: "rgba(255,255,255,0.5)",
+            },
+
+            // 👇hover時
+            "&:hover .MuiOutlinedInput-notchedOutline": {
+              borderColor: "#fff",
+            },
+
+            // 👇focus時
+            "& .Mui-focused .MuiOutlinedInput-notchedOutline": {
+              borderColor: "#fff",
+            },
+
+            // 👇矢印アイコン
+            "& .MuiSvgIcon-root": {
+              color: "#fff",
+            },
+          }}
+        >
           <InputLabel>PLAYERS</InputLabel>
           <Select
             value={playerCount}
@@ -155,7 +227,28 @@ export default function Home() {
           </Select>
         </FormControl>
 
-        <FormControl size="small" sx={{ minWidth: 150 }}>
+        <FormControl
+          size="small"
+          sx={{
+            minWidth: 150,
+
+            "& .MuiInputLabel-root": {
+              color: "#fff",
+            },
+            "& .MuiSelect-select": {
+              color: "#fff",
+            },
+            "& .MuiOutlinedInput-notchedOutline": {
+              borderColor: "rgba(255,255,255,0.5)",
+            },
+            "&:hover .MuiOutlinedInput-notchedOutline": {
+              borderColor: "#fff",
+            },
+            "& .MuiSvgIcon-root": {
+              color: "#fff",
+            },
+          }}
+        >
           <InputLabel>TIME</InputLabel>
           <Select
             value={initialMinutes}
@@ -177,7 +270,17 @@ export default function Home() {
       <Box sx={{ textAlign: "center" }}>
         <Button
           onClick={handleReset}
-          sx={{ fontSize: 24, fontWeight: 700 }}
+          sx={{
+            fontSize: 24,
+            fontWeight: 700,
+            color: "#D7E3F4",
+            letterSpacing: "0.2em",
+
+            "&:hover": {
+              color: "#ffffff",
+              textShadow: "0 0 10px rgba(215, 227, 244, 0.4)",
+            },
+          }}
         >
           RESET
         </Button>
@@ -196,8 +299,8 @@ export default function Home() {
               sx={{
                 p: 1,
                 borderRadius: 6,
-                bgcolor: active ? "#102A43" : "#fff",
-                color: active ? "#fff" : "#102A43",
+                bgcolor: active ? "#469beb" : "#fff",
+                color: active ? "#fff" : "#469beb",
                 cursor: active ? "pointer" : "default",
                 transition: ".2s",
               }}
@@ -219,6 +322,7 @@ export default function Home() {
           );
         })}
       </Box>
+    </Box>
     </Box>
   );
 }
