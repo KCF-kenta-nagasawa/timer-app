@@ -256,10 +256,7 @@ export default function Home() {
                   textAlign: "center",
                   fontWeight:600,
                   letterSpacing: "0.05em",
-                  fontSize: {
-                    xs: 40,
-                    md: 50,
-                  },
+                  fontSize: 40
                 }}
               >
                 {formatTime(time)}
