@@ -198,7 +198,7 @@ export default function Home() {
       ========================= */}
       <Box
         sx={{
-          maxWidth: 600,
+          maxWidth: 400,
           height:400,
           mx: "auto",
           display: "flex",
