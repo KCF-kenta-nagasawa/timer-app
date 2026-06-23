@@ -199,7 +199,7 @@ export default function Home() {
       <Box
         sx={{
           maxWidth: 600,
-          maxHeight:500,
+          height:400,
           mx: "auto",
           display: "flex",
           flexDirection: "column",
@@ -241,7 +241,7 @@ export default function Home() {
                 sx={{
                   textAlign: "center",
                   fontSize: 15,
-                  fontWeight: 600,
+                  fontWeight: 500,
                   letterSpacing: "0.2em",
                   opacity: 0.8,
                 }}
@@ -252,13 +252,13 @@ export default function Home() {
               {/* 残り時間 */}
               <Typography
                 sx={{
-                  mt: 0,
+                  m:-1,
                   textAlign: "center",
-                  fontWeight: 700,
-                  letterSpacing: "-0.05em",
+                  fontWeight:600,
+                  letterSpacing: "0.05em",
                   fontSize: {
                     xs: 40,
-                    md: 70,
+                    md: 50,
                   },
                 }}
               >
